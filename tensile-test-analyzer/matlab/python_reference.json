@@ -1,0 +1,22 @@
+{
+  "elastic_min": 0.0001,
+  "elastic_max": 0.001,
+  "metrics": {
+    "E_GPa": 200.0000000052194,
+    "proof_MPa": 254.26873935447375,
+    "UTS_MPa": 450.0,
+    "max_force_N": 4500.0,
+    "uniform_strain_percent": 15.0,
+    "fracture_stress_MPa": 300.0,
+    "fracture_strain_percent": 25.0,
+    "elongation_percent": null,
+    "reduction_percent": null,
+    "resilience_MJ_m3": 0.15624999999592235,
+    "toughness_MJ_m3": 95.28314291511755,
+    "recorded_energy_MJ_m3": 95.28314291511755,
+    "poisson": 0.30000000000104005,
+    "hardening_n": 0.23688820449499967,
+    "hardening_K_MPa": 798.6899085605345,
+    "mean_rate_s": 0.0009999999999728273
+  }
+}

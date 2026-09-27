@@ -1,0 +1,234 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Tensile Test Analyzer</title>
+    <link rel="stylesheet" href="/static/style.css" />
+    <script src="/static/plotly.min.js" defer></script>
+    <script src="/static/plotly-locales.js" defer></script>
+    <script src="/static/app.js" defer></script>
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="brand">
+        <span class="mark" aria-hidden="true">↔</span>
+        <div>
+          <strong>TENSILE<span class="brand-dot"> / </span>LAB</strong
+          ><small data-i18n="workspace"></small>
+        </div>
+      </div>
+      <div class="preferences">
+        <label
+          ><span data-i18n="language"></span
+          ><select id="language" aria-label="Language">
+            <option value="en">English</option>
+            <option value="de">Deutsch</option>
+            <option value="tr">Türkçe</option>
+          </select></label
+        ><label
+          ><span data-i18n="theme"></span
+          ><select id="theme">
+            <option value="light" data-i18n="light"></option>
+            <option value="dark" data-i18n="dark"></option></select
+        ></label>
+      </div>
+    </header>
+    <div class="layout">
+      <aside class="sidebar">
+        <h2 data-i18n="load_data"></h2>
+        <label for="example" data-i18n="example"></label>
+        <div class="input-row">
+          <select id="example"></select
+          ><button
+            id="loadExample"
+            class="icon-button"
+            data-i18n="load_example"
+          ></button>
+        </div>
+        <label class="upload-button"
+          ><span data-i18n="upload"></span
+          ><input id="upload" type="file" accept=".csv,.xlsx"
+        /></label>
+        <p class="hint" data-i18n="upload_hint"></p>
+        <div class="input-row">
+          <label
+            >CSV decimal<select id="decimal">
+              <option value=".">.</option>
+              <option value=",">,</option>
+            </select></label
+          ><label id="sheetLabel" hidden
+            ><span data-i18n="sheet"></span
+            ><select id="sheet"></select
+          ></label>
+        </div>
+        <div id="fileSummary" class="file-summary"></div>
+        <form id="settingsForm"></form>
+        <div class="sidebar-action">
+          <button
+            type="button"
+            class="primary"
+            id="analyze"
+            data-i18n="analyze"
+          ></button>
+        </div>
+      </aside>
+      <main>
+        <section class="hero">
+          <div>
+            <div class="eyebrow" data-i18n="discipline"></div>
+            <h1 data-i18n="app_title"></h1>
+            <p data-i18n="subtitle"></p>
+          </div>
+          <div
+            class="status"
+            id="status"
+            role="status"
+            aria-live="polite"
+          ></div>
+        </section>
+        <div id="error" class="error" role="alert" hidden></div>
+        <div class="sample-line">
+          <span class="source-badge" id="sourceBadge"></span
+          ><strong id="sampleTitle"></strong
+          ><button id="addCompare" data-i18n="add_compare"></button>
+        </div>
+        <section class="metrics" id="metrics"></section>
+        <nav class="tabs" aria-label="Analysis views" id="tabs">
+          <button
+            data-tab="overview"
+            class="active"
+            data-i18n="overview"
+          ></button
+          ><button data-tab="elastic" data-i18n="elastic_tab"></button
+          ><button data-tab="advanced" data-i18n="advanced_tab"></button
+          ><button data-tab="compare" data-i18n="compare_tab"></button
+          ><button data-tab="data" data-i18n="data_tab"></button
+          ><button data-tab="method" data-i18n="method_tab"></button>
+        </nav>
+        <section id="panel-overview" class="panel">
+          <article class="chart-card">
+            <div class="chart-heading">
+              <h2 data-i18n="engineering"></h2>
+              <span id="pointCount"></span>
+            </div>
+            <div id="engineeringChart" class="chart large"></div>
+          </article>
+          <div class="two-columns">
+            <article class="chart-card">
+              <h2 data-i18n="force_extension"></h2>
+              <div id="forceChart" class="chart"></div>
+            </article>
+            <article class="detail-card">
+              <h2 data-i18n="quality"></h2>
+              <dl id="quality"></dl>
+              <div class="report-actions">
+                <button data-export="png" data-i18n="png_export"></button
+                ><button data-export="svg" data-i18n="svg_export"></button>
+              </div>
+            </article>
+          </div>
+        </section>
+        <section id="panel-elastic" class="panel" hidden>
+          <article class="chart-card">
+            <h2 data-i18n="elastic_plot"></h2>
+            <p class="hint" data-i18n="select_range"></p>
+            <div id="elasticChart" class="chart large"></div>
+            <div class="fit-stats" id="fitStats"></div>
+          </article>
+          <div class="two-columns">
+            <article class="chart-card">
+              <h2 data-i18n="residuals"></h2>
+              <div id="residualChart" class="chart"></div>
+            </article>
+            <article class="detail-card">
+              <h2 data-i18n="yield_candidates"></h2>
+              <p class="hint" data-i18n="candidate_note"></p>
+              <div id="yieldCandidates"></div>
+            </article>
+          </div>
+        </section>
+        <section id="panel-advanced" class="panel" hidden>
+          <div class="two-columns">
+            <article class="chart-card">
+              <h2 data-i18n="true_plot"></h2>
+              <div id="trueChart" class="chart"></div>
+            </article>
+            <article class="chart-card">
+              <h2 data-i18n="hardening_plot"></h2>
+              <div id="hardeningChart" class="chart"></div>
+            </article>
+            <article class="chart-card">
+              <h2 data-i18n="poisson_plot"></h2>
+              <div id="poissonChart" class="chart"></div>
+            </article>
+            <article class="chart-card">
+              <h2 data-i18n="rate_plot"></h2>
+              <div id="rateChart" class="chart"></div>
+            </article>
+            <article class="chart-card">
+              <h2 data-i18n="partition"></h2>
+              <div id="partitionChart" class="chart"></div>
+            </article>
+            <article class="detail-card">
+              <h2 data-i18n="sensitivity"></h2>
+              <p class="hint" data-i18n="sensitivity_note"></p>
+              <div id="sensitivity"></div>
+            </article>
+          </div>
+        </section>
+        <section id="panel-compare" class="panel" hidden>
+          <div class="section-actions">
+            <h2 data-i18n="comparison_plot"></h2>
+            <button id="clearCompare" data-i18n="clear_compare"></button>
+          </div>
+          <div id="compareList"></div>
+          <div class="chart-card">
+            <div id="comparisonChart" class="chart large"></div>
+          </div>
+          <div class="detail-card">
+            <h2 data-i18n="statistics"></h2>
+            <div id="statistics" class="table-wrap"></div>
+          </div>
+        </section>
+        <section id="panel-data" class="panel" hidden>
+          <article class="detail-card">
+            <h2 data-i18n="export"></h2>
+            <div class="report-actions">
+              <button data-export="csv" data-i18n="csv_export"></button
+              ><button data-export="json" data-i18n="json_export"></button
+              ><button data-export="html" data-i18n="html_export"></button
+              ><button data-export="pdf" data-i18n="pdf_export"></button>
+            </div>
+            <label class="restore-label"
+              ><span data-i18n="restore"></span
+              ><input id="restore" type="file" accept=".json"
+            /></label>
+          </article>
+          <article class="detail-card">
+            <h2 data-i18n="metric"></h2>
+            <div id="allMetrics" class="table-wrap"></div>
+          </article>
+          <article class="detail-card">
+            <h2 data-i18n="preview"></h2>
+            <p class="hint" data-i18n="preview_hint"></p>
+            <div id="dataPreview" class="table-wrap"></div>
+          </article>
+        </section>
+        <section id="panel-method" class="panel" hidden>
+          <article class="detail-card method" id="methodText"></article>
+        </section>
+        <details class="review" id="reviewBox">
+          <summary>
+            <span data-i18n="review"></span> <span id="warningCount"></span>
+          </summary>
+          <ul id="warnings"></ul>
+        </details>
+        <footer>
+          <span data-i18n="local"></span
+          ><span>Tensile Test Analyzer · 1.0.0</span>
+        </footer>
+      </main>
+    </div>
+  </body>
+</html>
